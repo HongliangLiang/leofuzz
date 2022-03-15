@@ -1,0 +1,463 @@
+59,63d58
+< //Lolly added include
+< #include <math.h>
+< //add declaration
+< static u32 count_bytes(u8* mem);
+< 
+87,89d81
+< #define AFL_ORIG 0
+< 
+< 
+151,166d142
+< //Lolly added code
+< EXP_ST u32 seq[1024][1024];	      /* Record sequences */
+< static u32 seqidx=0;		      /* Total number of sequences recorded */
+< //static u8  virgin_seq[1024];	      /* Sequences yet untouched by fuzzing */
+< //static u32 seq_hit[1024];	      /* record number of seeds hit the sequence for each sequence */
+< static u32 triggered_seq=0;	      /* Total number of sequences triggered by seeds */
+< static double seqJ[1024];	      /* Record max coverage for each sequence  */
+< static double cur_Jaccard=-1.0;		/* Record coverage for current input */
+< static u32 maxseqid=0;			/* Sequence id with max coverage for current input */
+< //static double max_Jaccard =-1.0;	/* Maximal coverage for any input */
+< //static double min_Jaccard =-1.0;	/* Minimal coverage for any input */
+< double T= 1.0;				/* Temperature */
+< static u32 t_x=10;			/* Time to exploitation (Default : 10 min) */
+< FILE *Jfile = NULL;	
+< u8 has_new=0;
+< 
+273,282d248
+< 	//Lolly added code
+<   u8 lolly_add;
+<   double Jaccard;		      /* Max Jaccard for this seed */
+<   u32 seqid;			      /* Sequence id with max Jaccard */
+<   u8 has_new;			      /* This seed triggers a new sequence */
+<   u8 new_seq;
+<   u32 parent_seqid;		      /* Sequence id of parent seed */
+<   double parent_Jaccard;	      /* Coverage of the parent seed */
+< 
+< 
+293,294d258
+< //lolly added code
+< static struct queue_entry *first_entry=NULL;
+821,847d784
+< 
+< //Lolly added code
+<   q->has_new=has_new;
+<   q->Jaccard = cur_Jaccard;
+<   q->seqid = maxseqid;
+< //if(cur_Jaccard >=0)
+< //{
+< //      if(maxseqid>=0 && (unlikely(virgin_seq[maxseqid] & 0xff)))
+< //      {
+< //      	q->new_seq=0xff;
+< //      	virgin_seq[maxseqid] &= 0x00;
+< //      	triggered_seq += 1;
+< //      }
+< //}
+<   has_new=0;
+<   cur_Jaccard = -1.0;
+<   maxseqid=0;
+< 
+< 
+< 
+<   if(queue_cur != NULL  && queue_cur->Jaccard >0)
+<   {
+< 	q->parent_Jaccard= queue_cur->Jaccard;
+< 	q->parent_seqid  = queue_cur->seqid;
+<   }
+< 
+< 
+938,940d874
+< 	//Lolly
+< 	return -1 if only triggers new sequence coverage
+< 
+962,1037d895
+<   //Lolly added code
+<   has_new=0;
+<   cur_Jaccard=-1.0;
+<   maxseqid=0;
+<   if(virgin_bits==virgin_map)
+<   {
+< 
+< 	  /* Calculate Jaccard of current input with each sequence*/
+< 	  u32 trace_len=count_bytes((u8*)trace_bits);
+< 	  //added
+< 	  int seq_i;
+< 	  for(seq_i=0; seq_i<seqidx; seq_i++)
+< 	  {
+< 		double new_max_J=-1.0;
+< 		int inter_num=0;
+< //      	char* ppp=(char *)malloc(seq[seq_i][0]);
+< 		int seq_j;
+< 		for(seq_j=1;seq_j<seq[seq_i][0];seq_j++)
+< 		{
+< 			if(unlikely(*(((u8*)current+seq[seq_i][seq_j])) & 0xff))
+< 			{
+< 				inter_num++;
+< 				
+<   //                    	ppp[seq_j-1]='1';
+<         		}
+<   //           		else 
+<   //            		ppp[seq_j-1]='0';
+<         	}
+< 
+<         	//update seqJ array
+< 
+<   //              ppp[seq_j-1]='\0';
+< 		double i_Jaccard=(double)inter_num/(double)(seq[seq_i][0]-1);
+< 
+< ////////	  if(i_Jaccard > 0.4)
+< ////////          	fprintf(Jfile,"new bits function:  seqid: %d,  meets: %d, sequence matches: %s\n", seq_i, inter_num, ppp);
+<   //              free(ppp);
+< 		  if(seqJ[seq_i]<i_Jaccard)
+< 		  {
+< 			seqJ[seq_i]=i_Jaccard;
+< 			has_new=1;
+< 		  }	
+< 	//	seqJ[seq_i]=seqJ[seq_i]<i_Jaccard ?i_Jaccard : seqJ[seq_i];
+< 
+< 	////////fprintf(Jfile, " max: %lf, Jaccard: %lf\n",cur_Jaccard, i_Jaccard);
+< 		
+<         	if(inter_num>0)
+<         	{
+< 		//	if( min_Jaccard+1.0<0.0000001 && min_Jaccard+1.0>-0.0000001)
+< 	////////	if( min_Jaccard<0 )
+< 	////////		min_Jaccard=i_Jaccard;
+< 	////////	else
+< 	////////		min_Jaccard=(min_Jaccard>i_Jaccard)?i_Jaccard:min_Jaccard;
+< 	////////	
+< //	////////	if( max_Jaccard+1.0<0.0000001 && max_Jaccard+1.0>-0.0000001)
+< 	////////	if( max_Jaccard<0 )
+< 	////////		max_Jaccard=i_Jaccard;
+< 	////////	else
+< 	////////		max_Jaccard=(max_Jaccard<i_Jaccard)?i_Jaccard:max_Jaccard;
+< 
+< 
+<         		if(i_Jaccard>cur_Jaccard)
+<         		{
+<         			cur_Jaccard=i_Jaccard;
+<         			maxseqid=seq_i;
+<         		}
+<         	}
+< 	  }
+< 	//seq_hit[maxseqid]++;
+<     //    fprintf(Jfile,"seqid: %d, Jaccard : %lf, max Jaccard: %lf, min Jaccard: %lf\n", maxseqid, cur_Jaccard, max_Jaccard, min_Jaccard);
+< 
+<   }
+< 
+< 
+< 
+< 
+1084,1088c942
+<   //Lolly added code
+< #if !AFL_ORIG
+< // trylolly
+<    if (virgin_map == virgin_bits && ret==0 && has_new) ret=-1;
+< #endif
+---
+> 
+1387d1240
+< 
+1389a1243
+> 
+1461d1314
+< 
+1498,1504d1350
+<   //Lolly added code
+< //memset(virgin_seq, 255, 1024);
+< //memset(seq_hit, 0, 4096);
+<   for(int i=0; i<1024; i++)
+< 	seqJ[i]=0;
+< 
+< 
+1636d1481
+< 
+2721c2566
+<    start_us = get_cur_time_us();
+---
+>   start_us = get_cur_time_us();
+2730,2731c2575
+< //lolly
+<    // start_us = get_cur_time_us();
+---
+> 
+2733,2734d2576
+<   //lolly 
+<    // stop_us = get_cur_time_us();
+2748,2760d2589
+< 	//lolly added code
+< 	if( q->Jaccard<0 )
+< 	{
+< 		has_new_bits(virgin_bits);
+< 		q->Jaccard = cur_Jaccard;
+< 		q->has_new=has_new;
+< 		q->seqid = maxseqid;
+< 		has_new=0;
+< 		cur_Jaccard = -1.0;
+< 		maxseqid=0;
+< 	}//for initial seeds
+< 
+< 
+3284,3287d3112
+< 
+< 
+< 
+< 
+3290c3115
+<    entry st.st_sizesaved, 0 otherwise. */
+---
+>    entry is saved, 0 otherwise. */
+3331,3338c3156,3161
+< //lolly added code
+< //  if(fault==crash_mode)
+< //  {
+< 	res = calibrate_case(argv, queue_top, mem, queue_cycle - 1, 0);
+< 
+< 	if (res == FAULT_ERROR)
+<   		FATAL("Unable to execute target application");
+< //  }
+---
+> 
+>     res = calibrate_case(argv, queue_top, mem, queue_cycle - 1, 0);
+> 
+>     if (res == FAULT_ERROR)
+>       FATAL("Unable to execute target application");
+> 
+3345,3351c3168
+<     //lolly added code
+<     if(hnb==-1)
+<     {
+< 	queue_top->lolly_add=1;
+< 	if(crash_mode) total_crashes++;
+< 	return keeping;	
+<     }
+---
+> 
+3375,3376c3192
+< //      if (!has_new_bits(virgin_tmout)) return keeping;
+<         if (has_new_bits(virgin_tmout)==0) return keeping;
+---
+>         if (!has_new_bits(virgin_tmout)) return keeping;
+3421,3440d3236
+<     {
+< 	//Lolly added code	
+<           char *ppp = (char *)malloc(seq[queue_top->seqid][0]);
+<           int meet=0, seq_j;
+<           for(seq_j=1;seq_j<seq[queue_top->seqid][0];seq_j++)
+<           {
+<         	if(unlikely(*(((u8*)trace_bits+seq[queue_top->seqid][seq_j])) & 0xff))
+<         	{
+<         		ppp[seq_j-1]='1';	
+<         		meet+=1;
+<         	}
+<         	else
+<         		ppp[seq_j-1]='0';
+<           } 
+<           ppp[seq_j-1]='\0';
+< //          fprintf(Jfile, "unique crash : %d, lolly add: %d, seqid: %d, Jaccard: %lf, total length: %d, meets : %d, matches: %s\n", unique_crashes, queue_top->lolly_add, queue_top->seqid, cur_Jaccard, seq[maxseqid][0]-1, meet, ppp);
+< 	fprintf(Jfile, "unique crash : %d, lolly add: %d, seqid: %d, total: %d, meets: %d, Jaccard: %lf, matches:%s\n", unique_crashes, queue_top->lolly_add, queue_top->seqid, seq[queue_top->seqid][0]-1, meet, (double)meet/(double)(seq[queue_top->seqid][0]-1), ppp);
+<           free(ppp);
+< 
+< 
+3460,3461c3256
+< //      if (!has_new_bits(virgin_crash)) return keeping;
+<         if (0==has_new_bits(virgin_crash)) return keeping;
+---
+>         if (!has_new_bits(virgin_crash)) return keeping;
+3485c3280
+<     }
+---
+> 
+3488,3489c3283
+<     default: 
+< 	return keeping;
+---
+>     default: return keeping;
+4078c3872
+<   static u64 last_stats_ms, last_plot_ms, last_ms, last_execs, last_jfile;
+---
+>   static u64 last_stats_ms, last_plot_ms, last_ms, last_execs;
+4149,4174d3942
+< 
+< //Lolly added code
+<   if(cur_ms - last_jfile > 3 * 60 * 1000) 
+<   {
+< 	  u8* fn = alloc_printf("%s/Jacc.xls", out_dir);
+< 	  s32 fd;
+< 	  FILE* f;
+< 
+< 	  fd = open(fn, O_WRONLY | O_CREAT | O_APPEND, 0600);
+< 	  if (fd < 0)
+< 		PFATAL("Unable to create sequence record file %s!", fn);
+< 	  f = fdopen(fd, "a");
+< 
+< 	  if (!f) {
+< 	    close(fd);
+< 	  }
+< 	for(int i=0;i<seqidx;i++)
+< 		fprintf(f , "%lf\t", seqJ[i]);
+< 	fprintf(f,"\n");
+< 	ck_free(fn);
+< 	fclose(f);
+< 	last_jfile=cur_ms;
+<   }
+< 
+< 
+< 
+4935,4936c4703
+< //try2 don't have
+< //try6have
+---
+> 
+4946a4714
+> 
+4961a4730
+> 
+4972,5011d4740
+< #if !AFL_ORIG
+<         //Lolly added code
+<   u64 cur_ms = get_cur_time();
+<   u64 t = (cur_ms - start_time) / 1000;
+<   double progress_to_tx = ((double) t) / ((double) t_x * 60.0);
+<   T=1.0/pow(20.0, progress_to_tx);
+<   double Jaccard_factor=1.0;
+<   if(q->Jaccard>0)
+<   {
+< //out1
+<           double p=q->Jaccard * (q->Jaccard/seqJ[q->seqid]) * (1.0-T) + 0.5 * T;
+<           Jaccard_factor=Jaccard_factor * 10 * p;
+< //out2	
+< //      double p;
+< //      if( q->Jaccard < seqJ[q->seqid] && first_entry!=NULL)
+< //      {
+< //      	double possible=exp((q->Jaccard - seqJ[q->seqid])* (1-T));
+< //      	p=(random()%RAND_MAX<possible)?q->Jaccard:q->Jaccard * (q->Jaccard/seqJ[q->seqid]);
+< //      }
+< //      else
+< //      {
+< //      	if(first_entry==NULL)
+< //      		first_entry=q;
+< //      	p=q->Jaccard;		
+< //      }
+< //      Jaccard_factor=Jaccard_factor * pow(2.0, (p-0.25)*6);
+< 	
+< 
+<         if(q->has_new)
+<           	Jaccard_factor = (q->lolly_add)? Jaccard_factor * 2 : Jaccard_factor * 4;
+<   }
+<   else if(T<0.01)
+<   {
+< //        Jaccard_factor=Jaccard_factor * (0.2 + T * 0.5);
+< 	Jaccard_factor=0.1;                    
+<   }
+<   perf_score=(u32)(perf_score * Jaccard_factor);
+< #endif
+< 
+< 
+5015,5016d4743
+< //lolly added code
+<   fprintf(Jfile, "T: %lf, seed: %s, seq: %d, Jaccard: %lf, factor: %lf, score :%d, lolly add: %d\n", T, q->fname, q->seqid, q->Jaccard, Jaccard_factor, perf_score, q->lolly_add);
+5364,5370d5090
+<   //Lolly added code
+< //out3
+< //if((len<<3)>30000)//more than 30k jump to havoc stage directly
+< //   goto havoc_stage;
+< 	
+< 
+< 
+8006,8008c7726
+< 
+< 
+<   while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Qc:p:")) > 0)
+---
+>   while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0)
+8176,8233d7893
+< 	
+< //Lolly added code
+<       case 'c': { /* cut-off time for cooling schedule */
+< 
+<           u8 suffix = 'm';
+< 
+<           if (sscanf(optarg, "%u%c", &t_x, &suffix) < 1 ||
+<               optarg[0] == '-') FATAL("Bad syntax used for -c");
+< 
+<           switch (suffix) {
+< 
+<             case 's': t_x /= 60; break;
+<             case 'm': break;
+<             case 'h': t_x *= 60; break;
+<             case 'd': t_x *= 60 * 24; break;
+< 
+<             default:  FATAL("Unsupported suffix or bad syntax for -c");
+< 
+<           }
+< 
+<         }
+< 	
+< 	break;
+< 
+<       case 'p': { //specify runtimeseq.txt
+< 	// In each line, the first element record the length of the sequence, and the sequence follows.
+< 		  FILE * sf= fopen(optarg, "r");
+< 
+< 		  if (!sf) PFATAL("Unable to open '%s'", optarg);
+< 		  int idx=0;
+< 		  char buf[1024];
+< 		  seqidx=0;
+< 		  while (fgets(buf, MAX_LINE, sf)!=NULL) {
+< 			if(seqidx>=1024)
+< 				break;
+< 			if(buf[0]=='#')
+< 			{
+< 				if(seqidx==0 && idx==0)
+< 				{
+< 					idx=1;
+< 				}
+< 				else
+< 				{
+< 					seq[seqidx][0]=idx;
+< 					seqidx++;
+< 					idx=1;
+< 				}
+< 				continue;
+< 			}
+< 			int loc=atoi(buf);
+< 			seq[seqidx][idx]=loc;
+< 			idx++;
+< 		}	
+< 	}
+< 	break;
+< 
+< 
+< 
+8240,8258d7899
+< //Lolly added code
+<   u8* fn = alloc_printf("%s/Jfile", out_dir);
+<   s32 fd;
+< 
+<   fd = open(fn, O_WRONLY | O_CREAT | O_EXCL, 0600);
+<   if (fd < 0)
+< 	PFATAL("Unable to create record file %s!", fn);
+<   Jfile = fdopen(fd, "a");
+<   ck_free(fn);
+<   if (!Jfile) {
+<     close(fd);
+<   }
+< 
+< 
+< //fprintf(Jfile , "sequence number is : %d\n", seqidx);
+< 
+< 
+< 
+< 
+8348d7988
+< 
+8362d8001
+< 
+8365a8005
+> 
+8442,8445d8081
+< 
+< //Lolly added code
+<   fclose(Jfile);
+< 
