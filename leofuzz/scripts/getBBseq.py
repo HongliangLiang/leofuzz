@@ -11,7 +11,7 @@ if __name__ == '__main__':
     args = parser.parse_args ()
 
     path = args.bbSequence
-    pathtemp = path + "/Lollytemp"
+    pathtemp = path + "/Leofuzztemp"
     files = os.listdir(pathtemp)
     for filen in files:
         if filen.startswith("sequence"):

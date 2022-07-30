@@ -67,6 +67,6 @@ cat $TMPDIR/fun2line.txt | sort  > $TMPDIR/fun2line2.txt && mv $TMPDIR/fun2line2
 
 echo "Start get target sequence..."
 cd $TMPDIR 
-mkdir Lollytemp
-/scripts/Sequence.py -t $TMPDIR -o $TMPDIR/Lollytemp -d $TMPDIR/dot-files -k $3
+mkdir Leofuzztemp
+/scripts/Sequence.py -t $TMPDIR -o $TMPDIR/Leofuzztemp -d $TMPDIR/dot-files -k $3
 echo "Target sequence is getting"

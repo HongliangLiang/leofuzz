@@ -1,5 +1,5 @@
 59,63d58
-< //Lolly added include
+< //Leofuzz added include
 < #include <math.h>
 < //add declaration
 < static u32 count_bytes(u8* mem);
@@ -9,7 +9,7 @@
 < 
 < 
 151,166d142
-< //Lolly added code
+< //Leofuzz added code
 < EXP_ST u32 seq[1024][1024];	      /* Record sequences */
 < static u32 seqidx=0;		      /* Total number of sequences recorded */
 < //static u8  virgin_seq[1024];	      /* Sequences yet untouched by fuzzing */
@@ -26,7 +26,7 @@
 < u8 has_new=0;
 < 
 273,282d248
-< 	//Lolly added code
+< 	//Leofuzz added code
 <   u8 lolly_add;
 <   double Jaccard;		      /* Max Jaccard for this seed */
 <   u32 seqid;			      /* Sequence id with max Jaccard */
@@ -41,7 +41,7 @@
 < static struct queue_entry *first_entry=NULL;
 821,847d784
 < 
-< //Lolly added code
+< //Leofuzz added code
 <   q->has_new=has_new;
 <   q->Jaccard = cur_Jaccard;
 <   q->seqid = maxseqid;
@@ -68,11 +68,11 @@
 < 
 < 
 938,940d874
-< 	//Lolly
+< 	//Leofuzz
 < 	return -1 if only triggers new sequence coverage
 < 
 962,1037d895
-<   //Lolly added code
+<   //Leofuzz added code
 <   has_new=0;
 <   cur_Jaccard=-1.0;
 <   maxseqid=0;
@@ -149,7 +149,7 @@
 < 
 < 
 1084,1088c942
-<   //Lolly added code
+<   //Leofuzz added code
 < #if !AFL_ORIG
 < // trylolly
 <    if (virgin_map == virgin_bits && ret==0 && has_new) ret=-1;
@@ -163,7 +163,7 @@
 1461d1314
 < 
 1498,1504d1350
-<   //Lolly added code
+<   //Leofuzz added code
 < //memset(virgin_seq, 255, 1024);
 < //memset(seq_hit, 0, 4096);
 <   for(int i=0; i<1024; i++)
@@ -240,7 +240,7 @@
 >         if (!has_new_bits(virgin_tmout)) return keeping;
 3421,3440d3236
 <     {
-< 	//Lolly added code	
+< 	//Leofuzz added code	
 <           char *ppp = (char *)malloc(seq[queue_top->seqid][0]);
 <           int meet=0, seq_j;
 <           for(seq_j=1;seq_j<seq[queue_top->seqid][0];seq_j++)
@@ -279,7 +279,7 @@
 >   static u64 last_stats_ms, last_plot_ms, last_ms, last_execs;
 4149,4174d3942
 < 
-< //Lolly added code
+< //Leofuzz added code
 <   if(cur_ms - last_jfile > 3 * 60 * 1000) 
 <   {
 < 	  u8* fn = alloc_printf("%s/Jacc.xls", out_dir);
@@ -315,7 +315,7 @@
 > 
 4972,5011d4740
 < #if !AFL_ORIG
-<         //Lolly added code
+<         //Leofuzz added code
 <   u64 cur_ms = get_cur_time();
 <   u64 t = (cur_ms - start_time) / 1000;
 <   double progress_to_tx = ((double) t) / ((double) t_x * 60.0);
@@ -358,7 +358,7 @@
 < //lolly added code
 <   fprintf(Jfile, "T: %lf, seed: %s, seq: %d, Jaccard: %lf, factor: %lf, score :%d, lolly add: %d\n", T, q->fname, q->seqid, q->Jaccard, Jaccard_factor, perf_score, q->lolly_add);
 5364,5370d5090
-<   //Lolly added code
+<   //Leofuzz added code
 < //out3
 < //if((len<<3)>30000)//more than 30k jump to havoc stage directly
 < //   goto havoc_stage;
@@ -373,7 +373,7 @@
 >   while ((opt = getopt(argc, argv, "+i:o:f:m:t:T:dnCB:S:M:x:Q")) > 0)
 8176,8233d7893
 < 	
-< //Lolly added code
+< //Leofuzz added code
 <       case 'c': { /* cut-off time for cooling schedule */
 < 
 <           u8 suffix = 'm';
@@ -431,7 +431,7 @@
 < 
 < 
 8240,8258d7899
-< //Lolly added code
+< //Leofuzz added code
 <   u8* fn = alloc_printf("%s/Jfile", out_dir);
 <   s32 fd;
 < 
@@ -458,6 +458,6 @@
 > 
 8442,8445d8081
 < 
-< //Lolly added code
+< //Leofuzz added code
 <   fclose(Jfile);
 < 
