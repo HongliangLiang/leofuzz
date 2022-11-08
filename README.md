@@ -1,4 +1,4 @@
-This repository contains the tool LeoFuzz proposed in the paper "Kill Multiple Birds with One Stone: Multiple Targets Directed Greybox Fuzzing" submitted to TDSC.
+This repository contains the tool LeoFuzz proposed in the paper "Multiple Targets Directed Greybox Fuzzing" submitted to TDSC.
 # How to use LeoFuzz
 
 ## 1.Generate target sequence
