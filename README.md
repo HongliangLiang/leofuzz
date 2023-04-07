@@ -65,4 +65,7 @@ done
 ```
 
 
-
+To have leofuzz easily available with everything compiled, pull the image directly from the Docker Hub
+```
+docker pull tsis24/leofuzz
+```
